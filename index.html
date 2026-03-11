@@ -79,7 +79,10 @@
 <div class="container">
     <h2>Formulario Offline (Acumula Registros)</h2>
 
-    <form id="form">
+    <form 
+    action="https://formspree.io/f/xpqydrnq"
+    method="POST"
+        id="form">
 
         <input type="text" id="nombre" placeholder="Nombre" required>
         <input type="text" id="empresa" placeholder="Empresa">
@@ -112,9 +115,7 @@
 
         <button type="submit">Guardar Registro</button>
 
-    </form
-    action="https://formspree.io/f/xpqydrnq"
-  method="POST">
+    </form>
 
     <!-- BOTÓN NUEVO -->
     <button class="secondary" onclick="descargarManual()">Descargar CSV Manual</button>
@@ -212,3 +213,4 @@ document.getElementById("form").addEventListener("submit", function(e){
 
 </body>
 </html>
+
