@@ -1096,25 +1096,48 @@ for (let i = 0; i < 120; i++) {
   starsContainer.appendChild(s);
 }
 
+// ============================================================
+//  🖼️  IDs DE IMÁGENES EN GOOGLE DRIVE
+//  Cómo obtener el ID: clic derecho en foto de Drive → Compartir
+//  → "Cualquier persona con el link" → copia el ID de la URL:
+//  drive.google.com/file/d/  👉 AQUÍ_ESTÁ_EL_ID 👈  /view
+//  Deja '' si aún no tienes foto para ese producto.
+// ============================================================
+const DRIVE_IMG = {
+  cardholder:             '',   // ← pega el ID aquí
+  llavero:                '',
+  playera_blanca_army:    '',
+  playera_rosa_army:      '',
+  playera_crema_army:     '',
+  playera_negra_army:     '',
+  playera_blanca_arirang: '',
+  playera_negra_arirang:  '',
+  sudadera_negra:         '',
+  tote_bag:               '',
+};
+
+// Convierte Drive ID → URL de miniatura directa (400px)
+function driveUrl(id) {
+  return id ? `https://drive.google.com/thumbnail?id=${id}&sz=w400` : '';
+}
+
 // ---- Products definition ----
 const SIZES_PLAYERA = ['S', 'M', 'L', 'XL', 'XXL'];
 const SIZES_SUDADERA = ['S', 'M', 'L', 'XL'];
 const NO_SIZE = null;
 
 const products = [
-  { id: 'cardholder', name: 'Cardholder Arirang', sizes: NO_SIZE },
-  { id: 'llavero', name: 'Llavero Arirang', sizes: NO_SIZE },
-  { id: 'playera_blanca_army', name: 'Playera Blanca Army (muñeca Lele)', sizes: SIZES_PLAYERA },
-  { id: 'playera_rosa_army', name: 'Playera Rosa Pastel Army (muñeca Lele)', sizes: SIZES_PLAYERA },
-  { id: 'playera_crema_army', name: 'Playera Crema Army (muñeca Lele)', sizes: SIZES_PLAYERA },
-  { id: 'playera_negra_army', name: 'Playera Negra Army (muñeca Lele)', sizes: SIZES_PLAYERA },
-  { id: 'playera_blanca_arirang', name: 'Playera Blanca Arirang Tour', sizes: SIZES_PLAYERA },
-  { id: 'playera_negra_arirang', name: 'Playera Negra Arirang Tour', sizes: SIZES_PLAYERA },
-  { id: 'sudadera_negra', name: 'Sudadera Cierre Negra Arirang Tour', sizes: SIZES_SUDADERA },
-  { id: 'tote_bag', name: 'Tote Bag Arirang', sizes: NO_SIZE },
+  { id: 'cardholder',             name: 'Cardholder Arirang',                    sizes: NO_SIZE },
+  { id: 'llavero',                name: 'Llavero Arirang',                        sizes: NO_SIZE },
+  { id: 'playera_blanca_army',    name: 'Playera Blanca Army (muñeca Lele)',      sizes: SIZES_PLAYERA },
+  { id: 'playera_rosa_army',      name: 'Playera Rosa Pastel Army (muñeca Lele)', sizes: SIZES_PLAYERA },
+  { id: 'playera_crema_army',     name: 'Playera Crema Army (muñeca Lele)',       sizes: SIZES_PLAYERA },
+  { id: 'playera_negra_army',     name: 'Playera Negra Army (muñeca Lele)',       sizes: SIZES_PLAYERA },
+  { id: 'playera_blanca_arirang', name: 'Playera Blanca Arirang Tour',            sizes: SIZES_PLAYERA },
+  { id: 'playera_negra_arirang',  name: 'Playera Negra Arirang Tour',             sizes: SIZES_PLAYERA },
+  { id: 'sudadera_negra',         name: 'Sudadera Cierre Negra Arirang Tour',     sizes: SIZES_SUDADERA },
+  { id: 'tote_bag',               name: 'Tote Bag Arirang',                       sizes: NO_SIZE },
 ];
-
-const productImages = {}; // productId -> data URL
 
 function buildProductCards() {
   const grid = document.getElementById('productsGrid');
@@ -1125,8 +1148,7 @@ function buildProductCards() {
     card.className = 'product-card';
     card.id = `card_${p.id}`;
     card.onclick = (e) => {
-      // Don't toggle if clicking controls inside
-      if (e.target.closest('.product-controls') || e.target.closest('.image-upload-overlay')) return;
+      if (e.target.closest('.product-controls')) return;
       toggleProduct(p.id);
     };
 
@@ -1136,28 +1158,22 @@ function buildProductCards() {
          </select></div>`
       : '';
 
-    const imgSrc = productImages[p.id] || '';
+    const imgSrc = driveUrl(DRIVE_IMG[p.id]);
+    const placeholder = `<div class="product-image-placeholder">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
+        <polyline points="21 15 16 10 5 21"/>
+      </svg>
+      <span>Sin imagen</span>
+    </div>`;
+
     const imgContent = imgSrc
-      ? `<img src="${imgSrc}" alt="${p.name}">`
-      : `<div class="product-image-placeholder">
-          <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/>
-            <polyline points="21 15 16 10 5 21"/>
-          </svg>
-          <span>Sin imagen</span>
-         </div>`;
+      ? `<img src="${imgSrc}" alt="${p.name}" loading="lazy" onerror="this.outerHTML='${placeholder.replace(/'/g, "\\'").replace(/\n/g,'')}'">` 
+      : placeholder;
 
     card.innerHTML = `
-      <div class="product-image-wrap" id="imgWrap_${p.id}">
+      <div class="product-image-wrap">
         ${imgContent}
-        <label class="image-upload-overlay" for="imgInput_${p.id}" onclick="event.stopPropagation()">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
-            <circle cx="12" cy="13" r="4"/>
-          </svg>
-          <span>Subir imagen</span>
-        </label>
-        <input type="file" accept="image/*" id="imgInput_${p.id}" class="image-upload-input" onchange="handleProductImage(event, '${p.id}')">
       </div>
       <div class="product-info">
         <div class="product-name">${p.name}</div>
@@ -1182,28 +1198,6 @@ function buildProductCards() {
     `;
     grid.appendChild(card);
   });
-}
-
-function toggleProduct(id) {
-  const card = document.getElementById(`card_${id}`);
-  const isSelected = card.classList.contains('selected');
-  card.classList.toggle('selected', !isSelected);
-  const addBtn = document.getElementById(`addBtn_${id}`);
-  addBtn.textContent = isSelected ? 'Agregar al pedido' : 'En tu pedido ✓';
-}
-
-function handleProductImage(event, productId) {
-  const file = event.target.files[0];
-  if (!file) return;
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    productImages[productId] = e.target.result;
-    buildProductCards();
-    // Re-select if it was selected
-    const card = document.getElementById(`card_${productId}`);
-    // State is lost on rebuild, so we just refresh images without toggling back
-  };
-  reader.readAsDataURL(file);
 }
 
 // ---- Delivery toggle ----
@@ -1254,7 +1248,7 @@ dropArea.addEventListener('drop', ev => {
 // ============================================================
 //  ⚙️  PEGA AQUÍ EL URL DE TU APPS SCRIPT después de publicarlo
 // ============================================================
-const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxvyqualC23-71WclshHAsb7vwA6lTzbLDC5aAlu8l_x18_leyYpn1UFQRKaaOJ0XMx/exec';
+const APPS_SCRIPT_URL = 'PEGA_AQUÍ_EL_URL_DE_TU_APPS_SCRIPT';
 
 // ---- Form submit ----
 document.getElementById('orderForm').addEventListener('submit', async function(e) {
