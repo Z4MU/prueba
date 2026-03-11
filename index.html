@@ -1,19 +1,120 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario de Pedido</title>
+
+<style>
+
+body{
+font-family: Arial, sans-serif;
+background:#f4f4f4;
+padding:30px;
+}
+
+.container{
+max-width:500px;
+margin:auto;
+background:white;
+padding:25px;
+border-radius:8px;
+box-shadow:0 0 10px rgba(0,0,0,0.1);
+}
+
+h2{
+text-align:center;
+}
+
+input,select,textarea{
+width:100%;
+padding:10px;
+margin-top:8px;
+margin-bottom:16px;
+border:1px solid #ccc;
+border-radius:5px;
+font-size:16px;
+}
+
+button{
+width:100%;
+padding:12px;
+background:#0078d7;
+border:none;
+color:white;
+font-size:18px;
+border-radius:6px;
+cursor:pointer;
+}
+
+button:hover{
+background:#005fa3;
+}
+
+.success{
+display:none;
+margin-top:15px;
+color:green;
+text-align:center;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h2>Formulario de Pedido</h2>
+
+<form id="pedidoForm">
+
+<label>Nombre</label>
+<input type="text" id="nombre" required>
+
+<label>Producto</label>
+<input type="text" id="producto" required>
+
+<label>Talla</label>
+<select id="talla" required>
+<option value="">Selecciona una talla</option>
+<option>S</option>
+<option>M</option>
+<option>L</option>
+<option>XL</option>
+</select>
+
+<label>Cantidad</label>
+<input type="number" id="cantidad" min="1" required>
+
+<label>Dirección</label>
+<textarea id="direccion" required></textarea>
+
+<button type="submit">Enviar Pedido</button>
+
+</form>
+
+<div class="success" id="mensajeExito">
+Pedido enviado correctamente
+</div>
+
+</div>
+
 <script>
 
 const API_URL="https://script.google.com/macros/s/AKfycbxqFID_avDgWGDDjCYbuhLk2DNrDarUdRtsZ1tb9r5NUAcSYbmk0UL7SkcoLZspAcTPbg/exec";
 
-// Obtener registros
-function obtenerRegistros(){
-return JSON.parse(localStorage.getItem("registrosForm"))||[];
-}
+document.getElementById("pedidoForm").addEventListener("submit",async function(e){
 
-// Guardar registros
-function guardarRegistros(lista){
-localStorage.setItem("registrosForm",JSON.stringify(lista));
-}
+e.preventDefault();
 
-// Enviar a Google Sheets
-async function enviarAGoogleSheets(data){
+const data={
+nombre:document.getElementById("nombre").value,
+producto:document.getElementById("producto").value,
+talla:document.getElementById("talla").value,
+cantidad:document.getElementById("cantidad").value,
+direccion:document.getElementById("direccion").value
+};
 
 try{
 
@@ -26,59 +127,19 @@ headers:{
 body:JSON.stringify(data)
 });
 
+document.getElementById("mensajeExito").style.display="block";
+
+document.getElementById("pedidoForm").reset();
+
 }catch(error){
 
-console.log("No se pudo enviar a Google Sheets");
+alert("Error al enviar el pedido");
 
 }
-
-}
-
-// Submit
-document.getElementById("form").addEventListener("submit",async function(e){
-
-e.preventDefault();
-
-const nombre=document.getElementById("nombre").value;
-
-// Adaptamos campos existentes
-const producto=document.getElementById("servicio").value;
-
-const talla=document.getElementById("tipoContacto").value;
-
-// Usamos celular como cantidad solo como placeholder
-const cantidad=document.getElementById("celular").value||"1";
-
-// Construimos dirección combinando datos
-const direccion=
-document.getElementById("empresa").value + " | " +
-document.getElementById("email").value + " | " +
-document.getElementById("mensaje").value;
-
-const nuevoRegistro={
-nombre:nombre,
-producto:producto,
-talla:talla,
-cantidad:cantidad,
-direccion:direccion
-};
-
-// guardar offline
-let registros=obtenerRegistros();
-registros.push(nuevoRegistro);
-guardarRegistros(registros);
-
-// enviar online
-if(navigator.onLine){
-
-await enviarAGoogleSheets(nuevoRegistro);
-
-}
-
-alert("Registro enviado correctamente");
-
-document.getElementById("form").reset();
 
 });
 
 </script>
+
+</body>
+</html>
