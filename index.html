@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Formulario Offline + Formspree</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Formulario Offline + Google Sheets</title>
 
 <style>
 body{
@@ -78,7 +78,7 @@ background:#333;
 
 <div class="container">
 
-<h2>Formulario Offline + Formspree</h2>
+<h2>Formulario de Contacto</h2>
 
 <form id="form">
 
@@ -121,7 +121,7 @@ Doy mi consentimiento para que este formulario almacene mis datos.
 
 <script>
 
-const FORMSPREE_URL="https://formspree.io/f/xpqydrnq";
+const API_URL="https://script.google.com/macros/s/AKfycbxqFID_avDgWGDDjCYbuhLk2DNrDarUdRtsZ1tb9r5NUAcSYbmk0UL7SkcoLZspAcTPbg/exec";
 
 // Obtener registros
 function obtenerRegistros(){
@@ -133,7 +133,7 @@ function guardarRegistros(lista){
 localStorage.setItem("registrosForm",JSON.stringify(lista));
 }
 
-// CSV
+// Generar CSV
 function generarCSV(registros){
 
 if(registros.length===0)return "";
@@ -145,6 +145,7 @@ const filas=registros
 .join("\n");
 
 return encabezados+"\n"+filas;
+
 }
 
 // Descargar CSV
@@ -160,6 +161,7 @@ a.download=nombre;
 a.click();
 
 URL.revokeObjectURL(url);
+
 }
 
 // Descargar manual
@@ -177,15 +179,17 @@ const csv=generarCSV(registros);
 descargarCSV("registros_manual.csv",csv);
 
 alert("Archivo CSV descargado.");
+
 }
 
-// Enviar a Formspree
-async function enviarAFormspree(data){
+// Enviar a Google Sheets
+async function enviarAGoogleSheets(data){
 
 try{
 
-await fetch(FORMSPREE_URL,{
+await fetch(API_URL,{
 method:"POST",
+mode:"no-cors",
 headers:{
 "Content-Type":"application/json"
 },
@@ -194,7 +198,7 @@ body:JSON.stringify(data)
 
 }catch(error){
 
-console.log("No se pudo enviar a Formspree (modo offline)");
+console.log("No se pudo enviar a Google Sheets (modo offline)");
 
 }
 
@@ -227,7 +231,7 @@ guardarRegistros(registros);
 // enviar online
 if(navigator.onLine){
 
-await enviarAFormspree(nuevoRegistro);
+await enviarAGoogleSheets(nuevoRegistro);
 
 }
 
