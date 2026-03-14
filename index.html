@@ -297,7 +297,7 @@
 <div class="stars" id="stars"></div>
 
 <header class="header">
-  <div class="header-eyebrow">💜 BTS Official Merch</div>
+  <div class="header-eyebrow">💜 BTS Merch</div>
   <h1>Arirang Tour</h1>
   <p class="header-subtitle">Formulario de Pedido</p>
   <div class="header-divider">
@@ -372,6 +372,11 @@
           <label for="representante">Nombre de quien recogerá el pedido (si no eres tú)</label>
           <input type="text" id="representante" name="representante" placeholder="Déjalo en blanco si irás tú mismo/a">
           <p class="field-hint">Solo llena este campo si enviarás a alguien en tu lugar.</p>
+        </div>
+        <div class="field">
+          <label for="fecha_entrega">¿Qué sábado recogerás tu pedido? <span class="req">*</span></label>
+          <input type="text" id="fecha_entrega" name="fecha_entrega" placeholder="Ej: Sábado 28 de marzo">
+          <p class="field-hint">Escribe la fecha del sábado en que pasarás a recoger tu pedido.</p>
         </div>
       </div>
     </div>
@@ -673,6 +678,7 @@ document.getElementById('orderForm').addEventListener('submit', async function(e
     products:        productsData,
     deliveryMethod:  deliveryEl ? deliveryEl.dataset.delivery : '',
     representante:   document.getElementById('representante')?.value.trim() || '',
+    fecha_entrega:   document.getElementById('fecha_entrega')?.value.trim() || '',
     paqueteria:      shippingEl ? shippingEl.dataset.shipping : '',
     addr_nombre:     document.getElementById('addr_nombre')?.value.trim() || '',
     addr_calle:      document.getElementById('addr_calle')?.value.trim() || '',
